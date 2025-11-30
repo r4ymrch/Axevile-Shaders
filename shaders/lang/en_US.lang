@@ -1,9 +1,11 @@
+# sections name
 screen.ATMOSPHERICS=Atmospherics
 screen.SKY_OPTIONS=Sky Options
 screen.COLORS=Colors
 screen.SKY_COLORS=Sky Colors
-screen.MISC=Miscelaneous
+screen.MISC=Miscellaneous
 
+# option name
 option.ROUNDED_SUNMOON=Round Sun and Moon
 option.STARS=Vanilla Stars
 option.sky_brightness=Sky Brightnesss
