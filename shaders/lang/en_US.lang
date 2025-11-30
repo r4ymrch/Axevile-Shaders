@@ -1,0 +1,22 @@
+screen.ATMOSPHERICS=Atmospherics
+screen.SKY_OPTIONS=Sky Options
+screen.COLORS=Colors
+screen.SKY_COLORS=Sky Colors
+screen.MISC=Miscelaneous
+
+option.ROUNDED_SUNMOON=Round Sun and Moon
+option.STARS=Vanilla Stars
+option.sky_brightness=Sky Brightnesss
+option.stars_brightness=Stars Brightnesss
+option.zenith_density=Zenith Densities
+option.horizon_density=Horizon Densities
+option.horizon_offset=Horizon Offsets
+option.mie_phase_g=Mie Phase G
+option.mie_strength_mult=Mie Strength
+option.sky_color_r=Sky Color §cRed
+option.sky_color_g=Sky Color §aGreen
+option.sky_color_b=Sky Color §9Blue
+option.horizon_color_r=Horizon Color §cRed
+option.horizon_color_g=Horizon Color §aGreen
+option.horizon_color_b=Horizon Color §9Blue
+option.sunPathRotation=Sun Path Rotation
