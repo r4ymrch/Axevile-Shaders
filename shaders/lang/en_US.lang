@@ -1,13 +1,20 @@
+# profiles
+profile.fast=Fast
+
 # sections name
 screen.ATMOSPHERICS=Atmospherics
 screen.SKY_OPTIONS=Sky Options
 screen.COLORS=Colors
 screen.SKY_COLORS=Sky Colors
+screen.LIGHTING=Lighting
+screen.AO=Ambient Occlusion
 screen.MISC=Miscellaneous
 
 # option name
+option.SHADERS_INFO=Axeville Shaders
 option.ROUNDED_SUNMOON=Round Sun and Moon
 option.STARS=Vanilla Stars
+option.VAO=Vanilla AO
 option.sky_brightness=Sky Brightnesss
 option.stars_brightness=Stars Brightnesss
 option.zenith_density=Zenith Densities
@@ -21,4 +28,10 @@ option.sky_color_b=Sky Color §9Blue
 option.horizon_color_r=Horizon Color §cRed
 option.horizon_color_g=Horizon Color §aGreen
 option.horizon_color_b=Horizon Color §9Blue
+option.vao_strength=Vanilla AO Strength
+option.ssao_strength=SSAO Strength
+option.ssao_radius=SSAO Radius
 option.sunPathRotation=Sun Path Rotation
+
+# value name
+value.SHADERS_INFO.1=v1.0.0

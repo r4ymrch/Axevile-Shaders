@@ -10,9 +10,15 @@ uniform sampler2D colortex0;
 uniform sampler2D colortex1;
 uniform sampler2D colortex2;
 uniform sampler2D colortex3;
+uniform sampler2D colortex4;
 
 uniform int isEyeInWater;
 
+uniform float far;
+uniform float near;
 uniform float frameTimeCounter;
+uniform float aspectRatio;
+uniform float viewWidth;
+uniform float viewHeight;
 uniform float timeAngle;
 uniform float rainStrength;

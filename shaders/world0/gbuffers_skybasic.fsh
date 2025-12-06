@@ -2,9 +2,7 @@
 
 varying vec3 viewPos;
 varying vec3 sunVector, lightVector, upVector;
-
-float dayMixer = clamp(dot(sunVector, upVector) * 1.5, 0, 1);
-float nightMixer = clamp(dot(-sunVector, upVector) * 8, 0, 1);
+varying float dayMixer, nightMixer;
 
 #include "/lib/common.glsl"
 #include "/lib/uniforms.glsl"
@@ -14,7 +12,7 @@ float nightMixer = clamp(dot(-sunVector, upVector) * 8, 0, 1);
 void main() {
   vec3 normalizedViewPos = normalize(viewPos);
   vec4 color = calculateSkyScattering(normalizedViewPos);
-  
+
   // to linear
   color.rgb = pow(color.rgb, vec3(2.2));
   

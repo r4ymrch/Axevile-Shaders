@@ -2,6 +2,7 @@
 
 varying vec3 viewPos;
 varying vec3 sunVector, lightVector, upVector;
+varying float dayMixer, nightMixer;
 
 #include "/lib/common.glsl"
 #include "/lib/uniforms.glsl"
@@ -16,6 +17,9 @@ void main() {
     lightVector,
     upVector
   );
+
+  dayMixer = clamp(dot(sunVector, upVector) * 1.5, 0, 1);
+  nightMixer = clamp(dot(-sunVector, upVector) * 8, 0, 1);
 
   gl_Position = ftransform();
 }

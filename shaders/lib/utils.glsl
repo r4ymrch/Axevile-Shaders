@@ -4,6 +4,8 @@ const int colortex1Format = RGB8;
 const int colortex2Format = RG8;
 */
 
+const float invNoiseResolution = 0.015625;
+
 float luminance(vec3 x) {
   return dot(x, vec3(0.2125, 0.7154, 0.0721));
 }
