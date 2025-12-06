@@ -1,9 +1,11 @@
 # profiles
 profile.fast=Fast
+profile.default=Default
 
 # sections name
 screen.ATMOSPHERICS=Atmospherics
 screen.SKY_OPTIONS=Sky Options
+screen.CLOUD_OPTIONS=Cloud Options
 screen.COLORS=Colors
 screen.SKY_COLORS=Sky Colors
 screen.LIGHTING=Lighting
@@ -12,6 +14,7 @@ screen.MISC=Miscellaneous
 
 # option name
 option.SHADERS_INFO=Axeville Shaders
+option.BLOCKY_CLOUDS=Blocky Clouds
 option.ROUNDED_SUNMOON=Round Sun and Moon
 option.STARS=Vanilla Stars
 option.VAO=Vanilla AO
@@ -22,6 +25,14 @@ option.horizon_density=Horizon Densities
 option.horizon_offset=Horizon Offsets
 option.mie_phase_g=Mie Phase G
 option.mie_strength_mult=Mie Strength
+option.cloud_quality=Cloud Quality
+option.cloud_light_steps=Cloud Light Quality
+option.cloud_distance=Cloud Distances
+option.cloud_altitude=Cloud Height (Meters)
+option.cloud_density=Cloud Thickness
+option.cloud_opacity=Cloud Opacity
+option.cloud_mie_g=Cloud Mie Phase G
+option.cloud_mie_strength=Cloud Mie Strength
 option.sky_color_r=Sky Color §cRed
 option.sky_color_g=Sky Color §aGreen
 option.sky_color_b=Sky Color §9Blue
@@ -35,3 +46,16 @@ option.sunPathRotation=Sun Path Rotation
 
 # value name
 value.SHADERS_INFO.1=v1.0.0
+value.cloud_distance.2=2 Chunks
+value.cloud_distance.4=4 Chunks
+value.cloud_distance.6=6 Chunks
+value.cloud_distance.8=8 Chunks
+value.cloud_distance.10=10 Chunks
+value.cloud_distance.12=12 Chunks
+value.cloud_distance.14=14 Chunks
+value.cloud_distance.16=16 Chunks
+value.cloud_distance.20=20 Chunks
+value.cloud_distance.24=24 Chunks
+value.cloud_distance.32=32 Chunks
+value.cloud_distance.48=48 Chunks
+value.cloud_distance.64=64 Chunks

@@ -18,6 +18,8 @@ void main() {
   vec3 grayscale = vec3(luminance(color.rgb));
   color.rgb = mix(grayscale, color.rgb, 2);
 
+  color.a *= 1 - rainStrength;
+
   /* DRAWBUFFERS:0 */
   #ifdef ROUNDED_SUNMOON
     gl_FragData[0] = vec4(0);

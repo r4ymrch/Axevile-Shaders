@@ -4,7 +4,7 @@ const int colortex1Format = RGB8;
 const int colortex2Format = RG8;
 */
 
-const float invNoiseResolution = 0.015625;
+const float invNoiseResolution = 0.00390625;
 
 float luminance(vec3 x) {
   return dot(x, vec3(0.2125, 0.7154, 0.0721));
@@ -12,6 +12,20 @@ float luminance(vec3 x) {
 
 float fogify(float x, float width) {
 	return width / (x * x + width);
+}
+
+float remap(float value, float min1, float max1, float min2, float max2) { 
+  return min2 + (value - min1) * (max2 - min2) / (max1 - min1); 
+}
+
+float raySphereIntersect(float y, float h) {
+	float radius = 6371e3 + h;
+  float radiusSquared = radius * radius;
+  
+  float ds = y * 6371e3;
+  float dsSquared = ds * ds;
+	
+  return -ds + sqrt(dsSquared + radiusSquared - 4.058964e13);
 }
 
 float miePhase(float mu, float g) {
@@ -23,6 +37,16 @@ float miePhase(float mu, float g) {
   const float k = 0.119366;
   
   return k * ((1 - g2) * (mu2 + 1)) / denom;
+}
+
+float phase2Lobes(float x) {
+	float m = cloud_mie_strength;
+  float mg = cloud_mie_g;
+  
+  float lobe1 = miePhase(x, mg);
+  float lobe2 = miePhase(x, -0.05);
+	
+  return mix(lobe2, lobe1, m) * 3;
 }
 
 vec3 projectAndDivide(mat4 matrix, vec3 vectors) {
