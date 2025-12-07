@@ -8,7 +8,7 @@ varying float dayMixer, nightMixer;
 #include "/lib/uniforms.glsl"
 #include "/lib/utils.glsl"
 
-#ifdef BLOCKY_CLOUDS
+#ifdef CLOUDS
 	#include "/lib/atmospherics/clouds.glsl"
 #endif // BLOCKY_CLOUDS
 
@@ -19,14 +19,14 @@ void main() {
 	vec3 viewPos = cameraSpaceToViewSpace(texCoord, z);
 	vec3 worldPos = viewSpaceToWorldSpace(viewPos);
 
-	#ifdef BLOCKY_CLOUDS
+	#ifdef CLOUDS
 		if (z == 1) {
-		vec3 worldSunVec = mat3(gbufferModelViewInverse) * lightVector;
+			vec3 worldSunVec = mat3(gbufferModelViewInverse) * lightVector;
 
-		float dither = texture2D(noisetex, gl_FragCoord.xy * invNoiseResolution).b;
-		vec4 clouds = getVolumetricClouds(normalize(worldPos), worldSunVec, dither);
+			float dither = texture2D(noisetex, gl_FragCoord.xy * invNoiseResolution).r;
+			vec4 clouds = getVolumetricClouds(normalize(worldPos), worldSunVec, dither);
 
-		color = color * clouds.a + clouds.rgb;
+			color = color * clouds.a + clouds.rgb;
 		}
 	#endif // BLOCKY_CLOUDS
 

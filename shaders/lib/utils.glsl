@@ -39,14 +39,11 @@ float miePhase(float mu, float g) {
   return k * ((1 - g2) * (mu2 + 1)) / denom;
 }
 
-float phase2Lobes(float x) {
-	float m = cloud_mie_strength;
-  float mg = cloud_mie_g;
-  
+float phase2Lobes(float x, float m, float mg) {
   float lobe1 = miePhase(x, mg);
   float lobe2 = miePhase(x, -0.05);
 	
-  return mix(lobe2, lobe1, m) * 3;
+  return mix(lobe2, lobe1, m);
 }
 
 vec3 projectAndDivide(mat4 matrix, vec3 vectors) {

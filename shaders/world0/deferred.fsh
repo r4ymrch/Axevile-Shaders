@@ -8,7 +8,7 @@ varying vec2 texCoord;
 #include "/lib/lighting/ssao.glsl"
 
 void main() {
-  float dither = texture2D(noisetex, gl_FragCoord.xy * invNoiseResolution).b;
+  float dither = texture2D(noisetex, gl_FragCoord.xy * invNoiseResolution).r;
   float ao = ambientOcclusion(dither);
 
   /* DRAWBUFFERS:4 */
