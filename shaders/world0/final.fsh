@@ -2,7 +2,7 @@
 
 varying vec2 texCoord;
 
-#include "/lib/common.glsl"
+#include "/lib/config.glsl"
 #include "/lib/uniforms.glsl"
 #include "/lib/utils.glsl"
 
@@ -16,5 +16,5 @@ void main() {
   vec3 color = texture2D(colortex0, texCoord).rgb;
 
   /* DRAWBUFFERS:0 */
-  gl_FragData[0] = vec4(finalColor(color), 1);
+  gl_FragData[0] = vec4(finalColor(color), 1.0);
 }

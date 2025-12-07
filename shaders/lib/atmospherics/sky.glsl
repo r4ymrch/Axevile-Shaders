@@ -12,39 +12,38 @@ vec4 calculateSkyScattering(vec3 viewPos) {
   float viewDotSun = dot(viewPos, sunVector);
   float viewDotMoon = dot(viewPos, -sunVector);
 
-	float zenith = fogify(max(viewDotUp, 0), zenith_density * 1e-2);
+	float zenith = fogify(max(viewDotUp, 0.0), zenith_density * 0.01);
   float horizonOffset = horizon_offset * 0.1 + 0.1 * dayMixer;
-	float horizonGradient = fogify(max(viewDotUp + horizonOffset, 0), horizon_density * 1e-3);
+	float horizonGradient = fogify(max(viewDotUp + horizonOffset, 0.0), horizon_density * 0.001);
   
   vec3 totalSkyColor = skyColor * (0.5 + 0.5 * dayMixer);
   vec3 totalFogColor = fogColor * (vec3(1.65, 0.85, 0.4) + vec3(-0.65, 0.15, 0.6) * dayMixer);
   vec3 nightColor = skyColor * vec3(0.8, 0.65, 0.5);
 
-  // prevent negative value
-  totalSkyColor = clamp(totalSkyColor, vec3(0), vec3(3));
-  totalFogColor = clamp(totalFogColor, vec3(0), vec3(3));
-  nightColor = clamp(nightColor, vec3(0), vec3(3));
+  // prevent negative and to high value
+  totalSkyColor = clamp(totalSkyColor, vec3(0.0), vec3(3.0));
+  totalFogColor = clamp(totalFogColor, vec3(0.0), vec3(3.0));
+  nightColor = clamp(nightColor, vec3(0.0), vec3(3.0));
 
-  vec3 zenithColorDay = vec3(0) + totalSkyColor * zenith;
+  vec3 zenithColorDay = vec3(0.0) + totalSkyColor * zenith;
   vec3 daySky = mix(zenithColorDay, totalFogColor, horizonGradient);
   
-  vec3 zenithColorNight = vec3(0) + nightColor * zenith;
+  vec3 zenithColorNight = vec3(0.0) + nightColor * zenith;
   vec3 nightSky = mix(zenithColorNight, nightColor * 1.3, horizonGradient) * 0.6;
 
   // functions to mixing day and night sky dynamicly
-  // calculate distance to sun
   float distToSun = distance(viewPos, sunVector);
-  float skyMixer = smoothstep(1, 0.35, distToSun * 0.5) + exp(-distToSun * 0.2) * dayMixer;
-  skyMixer *= (1 - nightMixer);
+  float skyMixer = smoothstep(1.0, 0.35, distToSun * 0.5) + exp(-distToSun * 0.2) * dayMixer;
+  skyMixer *= 1.0 - nightMixer;
   
   vec3 finalSky = mix(nightSky, daySky, skyMixer);
 
-  float starAlpha = 0;
+  float starAlpha = 0.0;
   #ifdef STARS
     float starFallOff = max(skyMixer, horizonGradient);
-    starAlpha = stars_brightness * (1 - starFallOff) * (1 - dayMixer);
+    starAlpha = stars_brightness * (1.0 - starFallOff) * (1.0 - dayMixer);
     // prevent the stars become black
-    starAlpha = clamp(starAlpha, 0, 1);
+    starAlpha = clamp(starAlpha, 0.0, 1.0);
   #endif // STARS
 
   // TODO : hide sun and moon under the horizon
@@ -53,10 +52,10 @@ vec4 calculateSkyScattering(vec3 viewPos) {
 
     // TODO : dynamic moon phase
     float moonShape = drawCircle(viewPos, -sunVector, 0.1, 0.5);
-    moonShape *= 1 - drawCircle(viewPos - vec3(0.01, 0.01, 0), -sunVector, 0.2, 0.56);
+    moonShape *= 1 - drawCircle(viewPos - vec3(0.01, 0.01, 0.0), -sunVector, 0.2, 0.56);
     
-    vec3 sun = totalFogColor * 3 * sunShape;
-    vec3 moon = nightColor * 3 * moonShape;
+    vec3 sun = totalFogColor * 3.0 * sunShape;
+    vec3 moon = nightColor * 3.0 * moonShape;
 
     finalSky += sun + moon;
   #endif // ROUNDED_SUNMOON
@@ -74,13 +73,13 @@ vec4 calculateSkyScattering(vec3 viewPos) {
   
   vec3 mieScatterMoon = nightColor * phaseMoon * nightMixer;
   vec3 mieScatterSun = totalFogColor * phaseSun;
-  mieScatterSun *= (1 - nightMixer);
+  mieScatterSun *= 1.0 - nightMixer;
 
-  float adjustedMieStrength = 2 - 1 * nightMixer;
+  float adjustedMieStrength = 2.0 - 1.0 * nightMixer;
   adjustedMieStrength *= mie_strength_mult;
 
   vec3 totalMieScattering = adjustedMieStrength * (mieScatterSun + mieScatterMoon);
-  totalMieScattering *= (1 - rainStrength);
+  totalMieScattering *= 1.0 - rainStrength;
   
   finalSky += totalMieScattering;
 

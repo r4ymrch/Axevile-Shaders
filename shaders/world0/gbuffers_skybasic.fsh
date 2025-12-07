@@ -4,7 +4,7 @@ varying vec3 viewPos;
 varying vec3 sunVector, lightVector, upVector;
 varying float dayMixer, nightMixer;
 
-#include "/lib/common.glsl"
+#include "/lib/config.glsl"
 #include "/lib/uniforms.glsl"
 #include "/lib/utils.glsl"
 #include "/lib/atmospherics/sky.glsl"

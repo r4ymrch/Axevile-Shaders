@@ -2,7 +2,7 @@
 
 varying vec2 texCoord;
 
-#include "/lib/common.glsl"
+#include "/lib/config.glsl"
 #include "/lib/uniforms.glsl"
 #include "/lib/utils.glsl"
 
@@ -19,5 +19,5 @@ void main() {
   #endif // SSAO
 
   /* DRAWBUFFERS:0 */
-  gl_FragData[0] = vec4(color, 1);
+  gl_FragData[0] = vec4(color, 1.0);
 }

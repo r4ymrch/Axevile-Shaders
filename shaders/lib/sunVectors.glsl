@@ -5,9 +5,9 @@ void calculateSunVector(
   inout vec3 upVector
 ) {
   float sunAngle = fract(timeAngle - 0.25);
-  sunAngle = (sunAngle + (cos(sunAngle * 3.14) * -0.5 + 0.5 - sunAngle) / 3) * 6.28;
+  sunAngle = (sunAngle + (cos(sunAngle * 3.14) * -0.5 + 0.5 - sunAngle) / 3.0) * 6.28;
 
-  sunVector = vec3(-sin(sunAngle), cos(sunAngle), 0.0) * 2e3;
+  sunVector = vec3(-sin(sunAngle), cos(sunAngle), 0.0) * 2000.0;
   
   float pathRotation = radians(sunPathRotation);
   sunVector.yz *= rotateMatrix(pathRotation);

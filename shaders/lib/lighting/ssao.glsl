@@ -11,7 +11,7 @@ const vec2 sampleOffsets[4] = vec2[4](
 );
 
 float getLD(float depth) {
-  depth = depth * 2 - 1; 
+  depth = depth * 2.0 - 1.0; 
   vec2 zw = depth * gbufferProjectionInverse[2].zw + gbufferProjectionInverse[3].zw;
   return -zw.x / zw.y;
 }
@@ -22,12 +22,12 @@ float ambientOcclusion(float dither) {
 	const float INV_SQRT2 = 0.70710678118; // 1.0 / sqrt(2.0)
 
 	float z = texture2D(depthtex0, texCoord).r;
-	if (z == 1) return 1.0;
+	if (z == 1.0) return 1.0;
 	
 	float lz = getLD(z);
   float distanceScale = max(lz, 2.5);
 	
-	vec2 scale = ssao_radius * vec2(1 / aspectRatio, 1) * (gbufferProjection[1][1] / 1.37) / distanceScale;
+	vec2 scale = ssao_radius * vec2(1.0 / aspectRatio, 1.0) * (gbufferProjection[1][1] / 1.37) / distanceScale;
   vec2 baseOffset = vec2(cos(dither * TWO_PI), sin(dither * TWO_PI));
   
 	float ao = 0.0;
@@ -42,16 +42,16 @@ float ambientOcclusion(float dither) {
       float deltaZ = lz - sampleDepth;
 			float aoSample = deltaZ * 3.0 / currentStep; 
 
-			angle += clamp(0.5 - aoSample, 0, 1);
-			dist += clamp(0.25 * aoSample - 1, 0, 1);
+			angle += clamp(0.5 - aoSample, 0.0, 1.0);
+			dist += clamp(0.25 * aoSample - 1.0, 0.0, 1.0);
 			offset = -offset;
 		}
 		
-		ao += clamp(angle + dist, 0, 1);
+		ao += clamp(angle + dist, 0.0, 1.0);
 		baseOffset = vec2(baseOffset.x - baseOffset.y, baseOffset.x + baseOffset.y) * INV_SQRT2;
 	}
 
-	return clamp(ao * 0.25, 0, 1);
+	return clamp(ao * 0.25, 0.0, 1.0);
 }
 
 float getAmbientOcclusion(float z) {
@@ -64,13 +64,13 @@ float getAmbientOcclusion(float z) {
 		vec2 depthOffset = sampleOffsets[i] / vec2(viewWidth, viewHeight);
 		
 		float samplez = getLD(texture2D(depthtex0, texCoord + depthOffset).r);
-		float wg = max(1 - 4 * abs(lz - samplez), 1e-5);
+		float wg = max(1.0 - 4.0 * abs(lz - samplez), 0.00001);
 		
 		ao += texture2D(colortex4, texCoord + sampleOffset).r * wg;
 		tw += wg;
 	}
 
-  if (tw > 1e-4) {
+  if (tw > 0.0001) {
     ao /= tw;
   } else {
     ao = texture2D(colortex4, texCoord).r;

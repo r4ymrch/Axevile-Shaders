@@ -31,12 +31,12 @@ float raySphereIntersect(float y, float h) {
 float miePhase(float mu, float g) {
   float mu2 = mu * mu;
 	float g2 = g * g;
-  float x = 1 + g2 - 2 * mu * g;
+  float x = 1.0 + g2 - 2 * mu * g;
 
-  float denom = x * sqrt(x) * (2 + g2);
+  float denom = x * sqrt(x) * (2.0 + g2);
   const float k = 0.119366;
   
-  return k * ((1 - g2) * (mu2 + 1)) / denom;
+  return k * ((1.0 - g2) * (mu2 + 1.0)) / denom;
 }
 
 float phase2Lobes(float x, float m, float mg) {
@@ -47,12 +47,12 @@ float phase2Lobes(float x, float m, float mg) {
 }
 
 vec3 projectAndDivide(mat4 matrix, vec3 vectors) {
-  vec4 homoPos = matrix * vec4(vectors, 1);
+  vec4 homoPos = matrix * vec4(vectors, 1.0);
   return homoPos.xyz / homoPos.w;
 }
 
 vec3 cameraSpaceToViewSpace(vec2 cameraPos, float depth) {
-  vec4 fragPos = vec4(cameraPos, depth, 1) * 2 - 1;
+  vec4 fragPos = vec4(cameraPos, depth, 1.0) * 2.0 - 1.0;
   return projectAndDivide(gbufferProjectionInverse, fragPos.xyz);
 }
 

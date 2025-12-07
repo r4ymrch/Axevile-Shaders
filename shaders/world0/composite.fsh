@@ -4,7 +4,7 @@ varying vec2 texCoord;
 varying vec3 sunVector, lightVector, upVector;
 varying float dayMixer, nightMixer;
 
-#include "/lib/common.glsl"
+#include "/lib/config.glsl"
 #include "/lib/uniforms.glsl"
 #include "/lib/utils.glsl"
 
@@ -31,5 +31,5 @@ void main() {
 	#endif // BLOCKY_CLOUDS
 
   /* DRAWBUFFERS:0 */
-  gl_FragData[0] = vec4(color, 1);
+  gl_FragData[0] = vec4(color, 1.0);
 }
