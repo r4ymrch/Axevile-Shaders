@@ -18,3 +18,11 @@ float GetFogFactor(vec3 viewPos) {
 
 	return totalFogFac;
 }
+
+float GetUnderwaterFogFactor(vec3 viewPos) {
+	float dist = length(viewPos) * 0.02;
+	float fogFactor = exp(-1.5 * (1.0 - dist));
+	fogFactor = clamp(fogFactor, 0.0, 1.0);
+
+	return fogFactor;
+}

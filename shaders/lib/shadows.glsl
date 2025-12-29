@@ -11,7 +11,7 @@ const vec2 shadowOffsets[8] = vec2[8](
 
 vec2 sampleBlur(int i) {
   float blueNoise = texture2D(noisetex, gl_FragCoord.xy * invNoiseRes).r;
-	return rotateMatrix(blueNoise * 6.28) * shadowOffsets[i];
+	return rotmat(blueNoise * 6.28) * shadowOffsets[i];
 }
 
 float getBasicShadow(sampler2DShadow shadowTex, vec3 shadowPos) {
@@ -28,15 +28,13 @@ float getFilteredShadow(sampler2DShadow shadowTex, vec3 shadowPos, float blurRad
 }
 
 vec3 getShadows(vec3 worldPos, vec3 normal, vec3 alphaTest) {
-  vec3 wNormal = toWorld(normal);
+  vec3 wNormal = mat3(gbufferModelViewInverse) * normal;
 
   float NdotL = clamp(dot(normal, lightVec), 0.0, 1.0);
 	float cDist = sqrt(dot(worldPos, worldPos));
-  vec3 bias = wNormal * min(0.06 + cDist * 0.005, 0.5) * (2.0 - max(NdotL, 0.0));
+  vec3 bias = wNormal * min(0.05 + cDist * 0.005, 0.5) * (2.0 - max(NdotL, 0.0));
 
-  if (alphaTest.x > 0.0 || alphaTest.y > 0.0) {
-    bias *= 0.25;
-  }
+  bias *= (alphaTest.x > 0.0 || alphaTest.y > 0.0) ? 0.25 : 1.0;
 
   vec3 shadowPos = toShadow(worldPos + bias);
   shadowPos = distortShadow(shadowPos);

@@ -1,11 +1,3 @@
-float getSunMoonShape(vec3 viewPos, vec3 sunVec, float edgeSmooth, float scale) {
-  float dist = distance(viewPos, sunVec);
-  float scaleFactor = scale * 0.1;
-  float smoothFactor = scaleFactor - edgeSmooth * 0.1;
-  
-  return smoothstep(scaleFactor, smoothFactor, dist);
-}
-
 vec4 getSky(vec3 viewPos) {
   float VoU = dot(viewPos, upVec);
   float VoL_Sun = dot(viewPos, sunVec);
@@ -14,50 +6,38 @@ vec4 getSky(vec3 viewPos) {
 	float zenith = fogify(max(VoU, 0.0), ZENITH_DENSITIES * 0.01);
   vec3 zenithSun = vec3(0.0) + zenithCol * zenith;
   vec3 zenithMoon = vec3(0.0) + moonCol * 0.7 * zenith;
-  
-	float horizonBase = fogify(max(VoU + h_Offset, 0.0), h_Dens + 0.025);
-	float horizonFall = fogify(max(VoU + 0.02, 0.0), h_Dens);
-	float horizonFall2 = fogify(max(VoU + 0.02, 0.0), h_Dens * 0.075);
-  float horizonExit = fogify(max(VoU + 1.0, 0.0), 1.0) * horizonFall * 0.7;
 
-  vec3 sunSky = mix(zenithSun, sunLightCol * (1.5 - 0.5 * sunVisibility), horizonBase);
-  
-  vec3 skyFade = mix(sunSky, sunLightCol * 0.6, horizonFall);
-  vec3 skyGround = mix(sunSky, pow(zenithCol, vec3(0.5)) * 0.7, horizonFall2);
-  skyGround = mix(skyGround, sunLightCol * 0.6, horizonFall * rainStrength);
-  
-  skyGround = mix(skyGround, sunLightCol * 0.1, horizonExit);
-  skyGround = pow(skyGround, vec3(1.3)) * 1.4;
+  vec4 horizon = vec4(
+    fogify(max(VoU + h_Offset, 0.0), h_Dens + 0.025), // base
+    fogify(max(VoU + 0.02, 0.0), h_Dens), // fall
+    fogify(max(VoU + 0.02, 0.0), h_Dens * 0.075), // fall2
+    fogify(max(VoU + 1.0, 0.0), 1.0) * fogify(max(VoU + 0.02, 0.0), h_Dens) * 0.7 // exit
+  );
 
-  sunSky = mix(skyFade, skyGround, clamp(0.25 + 0.75 * sunVisibility, 0.0, 1.0));
+  vec3 sunSky = mix(zenithSun, sunLightCol * (1.5 - 0.5 * sunVisibility), horizon.x);
+  vec3 skyFade = mix(sunSky, sunLightCol * 0.6, horizon.y);
+  
+  vec3 skyGround = mix(sunSky, pow(zenithCol, vec3(0.5)) * 0.7, horizon.z);
+  skyGround = mix(skyGround, sunLightCol * 0.6, horizon.y * rainStrength);  
+  skyGround = mix(skyGround, sunLightCol * 0.1, horizon.w);
 
-  vec3 moonSky = mix(zenithMoon, moonCol * 1.5, horizonBase) * 0.75;
-  moonSky = mix(moonSky, moonCol * 0.5, horizonFall2);
+  sunSky = mix(skyFade, skyGround * 1.4, clamp(0.25 + 0.75 * sunVisibility, 0.0, 1.0));
+
+  vec3 moonSky = mix(zenithMoon, moonCol * 1.5, horizon.x) * 0.75;
+  moonSky = mix(moonSky, moonCol * 0.5, horizon.z);
 
   // functions to mixing day and night sky dynamicly
-  float dist = distance(viewPos, sunVec);
-  float skyMixFactor = smoothstep(1.0, 0.0, dist * 0.4) + 1.0 * sunVisibility;
-  skyMixFactor *= 1.0 - moonVisibility;
+  float mixFactor = smoothstep(1.0, 0.25, distance(viewPos, sunVec) * 0.5) + 1.0 * sunVisibility;
+  mixFactor *= 1.0 - moonVisibility;
   
   vec4 sky = vec4(0.0);
-  sky.rgb = mix(moonSky, sunSky, skyMixFactor);
-
-  if (isEyeInWater == 1) {
-    // TODO : fancy sky underwater
-    sky.rgb = mix(zenithCol, moonCol * 0.5, moonVisibility); // simple
-  }
+  sky.rgb = mix(moonSky, sunSky, mixFactor);
 
   #ifdef STARS
-    float starFallOff = max(skyMixFactor, horizonBase);
+    float starFallOff = max(mixFactor, horizon.x);
     sky.a = STARS_BRIGHTNESS * (1.0 - starFallOff) * (1.0 - sunVisibility);
     sky.a = clamp(sky.a, 0.0, STARS_BRIGHTNESS);
   #endif // STARS
-
-  vec3 sun = sunLightCol * 3.0;
-  sun *= getSunMoonShape(viewPos, sunVec, 0.2, 0.4) * 3.0;
-  sun *= (1.0 - rainStrength) * (1.0 - horizonFall);
-
-  sky.rgb += sun;
 
   const float outer_G = MIE_PHASE_G;
   const float inner_G = 0.925;
@@ -78,7 +58,13 @@ vec4 getSky(vec3 viewPos) {
   
   sky.rgb += mie;
 
-  vec3 lumaSky = vec3(luma(sky.rgb));
+  if (isEyeInWater == 1) {
+    // TODO : fancy sky underwater
+    vec3 waterFogColor = vec3(0.2, 0.8, 1.0) * mix(0.15, 0.25, sunVisibility);
+    sky.rgb = waterFogColor; // simple
+  }
+
+  vec3 lumaSky = vec3(luminance(sky.rgb));
 
   if (rainStrength > 0) {
 	  vec3 rainCol = lumaSky * vec3(0.6, 0.8, 1) * 1.25;
@@ -96,38 +82,38 @@ vec4 getSkyFog(vec3 viewPos) {
 	float zenith = fogify(max(VoU, 0.0), ZENITH_DENSITIES * 0.01);
   vec3 zenithSun = vec3(0.0) + zenithCol * zenith;
   vec3 zenithMoon = vec3(0.0) + moonCol * 0.7 * zenith;
+
+  vec4 horizon = vec4(
+    fogify(max(VoU + h_Offset, 0.0), h_Dens), // base
+    fogify(max(VoU + 0.02, 0.0), h_Dens), // fall
+    fogify(max(VoU + 0.02, 0.0), h_Dens * 0.5), // fall2
+    fogify(max(VoU + 1.0, 0.0), 1.0) * fogify(max(VoU + 0.02, 0.0), h_Dens) * 0.7 // exit
+  );
+
+  vec3 sunSky = mix(zenithSun, sunLightCol * (1.5 - 0.5 * sunVisibility), horizon.x);
+  vec3 skyFade = mix(sunSky, sunLightCol * 0.6, horizon.y);
   
-	float horizonBase = fogify(max(VoU + h_Offset, 0.0), h_Dens);
-	float horizonFall = fogify(max(VoU + 0.02, 0.0), h_Dens);
-	float horizonFall2 = fogify(max(VoU + 0.02, 0.0), h_Dens * 0.5);
-  float horizonExit = fogify(max(VoU + 1.0, 0.0), 1.0) * horizonFall * 0.7;
+  vec3 skyGround = mix(sunSky, pow(zenithCol, vec3(0.5)) * 0.7, horizon.z);
+  skyGround = mix(skyGround, sunLightCol * 0.6, horizon.y * rainStrength);  
+  skyGround = mix(skyGround, sunLightCol * 0.1, horizon.w);
 
-  vec3 sunSky = mix(zenithSun, sunLightCol * (1.5 - 0.5 * sunVisibility), horizonBase);
-  
-  vec3 skyFade = mix(sunSky, sunLightCol * 0.6, horizonFall);
-  vec3 skyGround = mix(sunSky, pow(zenithCol, vec3(0.5)) * 0.7, horizonFall2);
-  skyGround = mix(skyGround, sunLightCol * 0.6, horizonFall * rainStrength);
+  sunSky = mix(skyFade, skyGround * 1.4, clamp(0.25 + 0.75 * sunVisibility, 0.0, 1.0));
 
-  skyGround = mix(skyGround, sunLightCol * 0.1, horizonExit);
-  skyGround = pow(skyGround, vec3(1.3)) * 1.4;
-
-  sunSky = mix(skyFade, skyGround, clamp(0.25 + 0.75 * sunVisibility, 0.0, 1.0));
-
-  vec3 moonSky = mix(zenithMoon, moonCol * 1.5, horizonBase) * 0.75;
-  moonSky = mix(moonSky, moonCol * 0.5, horizonFall);
+  vec3 moonSky = mix(zenithMoon, moonCol * 1.5, horizon.x) * 0.75;
+  moonSky = mix(moonSky, moonCol * 0.5, horizon.z);
 
   // functions to mixing day and night sky dynamicly
-  float dist = distance(viewPos, sunVec);
-  float skyMixFactor = smoothstep(1.0, 0.0, dist * 0.4) + 1.0 * sunVisibility;
-  skyMixFactor *= 1.0 - moonVisibility;
+  float mixFactor = smoothstep(1.0, 0.25, distance(viewPos, sunVec) * 0.5) + 1.0 * sunVisibility;
+  mixFactor *= 1.0 - moonVisibility;
   
   vec4 sky = vec4(0.0);
-  sky.rgb = mix(moonSky, sunSky, skyMixFactor);
+  sky.rgb = mix(moonSky, sunSky, mixFactor);
 
-  if (isEyeInWater == 1) {
-    // TODO : fancy sky underwater
-    sky.rgb = mix(zenithCol, moonCol * 0.5, moonVisibility); // simple
-  }
+  #ifdef STARS
+    float starFallOff = max(mixFactor, horizon.x);
+    sky.a = STARS_BRIGHTNESS * (1.0 - starFallOff) * (1.0 - sunVisibility);
+    sky.a = clamp(sky.a, 0.0, STARS_BRIGHTNESS);
+  #endif // STARS
 
   const float outer_G = MIE_PHASE_G;
   const float inner_G = 0.925;
@@ -145,7 +131,13 @@ vec4 getSkyFog(vec3 viewPos) {
   
   sky.rgb += mie;
 
-  vec3 lumaSky = vec3(luma(sky.rgb));
+  if (isEyeInWater == 1) {
+    // TODO : fancy sky underwater
+    vec3 waterFogColor = vec3(0.2, 0.8, 1.0) * mix(0.15, 0.25, sunVisibility);
+    sky.rgb = waterFogColor; // simple
+  }
+
+  vec3 lumaSky = vec3(luminance(sky.rgb));
 
   if (rainStrength > 0) {
 	  vec3 rainCol = lumaSky * vec3(0.6, 0.8, 1) * 1.25;
